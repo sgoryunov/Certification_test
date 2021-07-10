@@ -1,0 +1,48 @@
+---
+- name: Configure production server
+  hosts: ec2_prod
+  remote_user: ubuntu
+  become: yes
+  vars:
+    region: us-east-2
+    version: v1.1.1
+
+  tasks:
+  - name: Ensure packages is present
+    apt:
+      update_cache: yes
+      name:
+      - docker.io
+      - docker-compose
+      - python3-pip
+      state: present
+
+  - name: Installing boto3 and docker
+    pip:
+      state: present
+      name:
+      - boto3
+      - docker
+      - awscli
+      executable: /usr/bin/pip3
+  
+  - name: Provisioning of repository
+    ecs_ecr:   
+      name: prod_image
+      region: "{{ region }}"
+    register: ecs_ecr
+
+  - name: Ensure that aws cred is copied
+    copy:
+      src: .aws/
+      dest: .aws/
+  
+  - name: docker_repository - Log into ECR registry and force re-authorization
+    shell: aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecs_ecr.repository.registryId }}.dkr.ecr.{{region}}.amazonaws.com
+
+  - name: Create a data container
+    docker_container:
+      name: production
+      image: "{{ ecs_ecr.repository.repositoryUri }}:{{version}}"
+      ports:
+      - "8080:8080"

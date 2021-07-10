@@ -1,0 +1,64 @@
+---
+- name: Configuration of build node
+  hosts: ec2_build
+  remote_user: ubuntu
+  become: yes
+  vars:
+    region: us-east-2
+    version: v1.1.1
+
+  tasks:
+  - name: Esure git and maven package is present
+    apt:
+      update_cache: yes
+      name:
+      - docker.io
+      - git
+      - maven
+      - python3-pip
+      state: present
+
+  - name: Installing boto3 and docker
+    pip:
+      state: present
+      name:
+      - boto3
+      - docker
+      - awscli
+      executable: /usr/bin/pip3
+
+  - name: Clone repository
+    git:
+      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+      dest: boxfuse-sample-java-war-hello/
+
+  - name: Build war
+    shell: mvn -f boxfuse-sample-java-war-hello package
+
+  - name: Provisioning of repository
+    ecs_ecr:   
+      name: prod_image
+      region: "{{ region }}"
+    register: ecs_ecr
+
+  - name: Ensure that Dockerfile is copied to build server
+    copy:
+      src: Dockerfile
+      dest: .
+
+  - name: Ensure that aws cred is copied
+    copy:
+      src: .aws/
+      dest: .aws/
+
+  - name: docker_repository - Log into ECR registry and force re-authorization
+    shell: aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecs_ecr.repository.registryId }}.dkr.ecr.{{region}}.amazonaws.com
+
+  - name: Build an image and push it to a private repo
+    docker_image:
+      build:
+        path: ./
+      name: "{{ ecs_ecr.repository.repositoryUri }}"
+      tag: "{{version}}"
+      push: yes
+      source: build
