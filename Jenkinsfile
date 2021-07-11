@@ -8,14 +8,14 @@ pipeline {
               sh 'terraform apply -input=false tfplan'
             }
         }
-        stage ('build') {
+        stage ('Build') {
             steps {
                 //  play playbook ansible for build
                 sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts.txt --extra-vars "version=$(version)"  stage_build.yml'
                 
             }
         }
-        stage ('deploy') {
+        stage ('Deploy') {
             steps {
                 //  copy compose-file and up it for start docker-image 
                 sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts.txt --extra-vars "version=$(version)" stage_deploy.yml'

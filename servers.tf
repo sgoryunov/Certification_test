@@ -5,13 +5,12 @@ resource "aws_key_pair" "my-key" {
 }
 
 resource "aws_instance" "ec2-instances" {
-  iam_instance_profile = var.iam_profile_name
+  # iam_instance_profile = var.iam_profile_name
   count = var.instances_num
   ami           = "${var.ami_id}"
   instance_type = "t2.micro"
   key_name      = aws_key_pair.my-key.key_name
-  user_data = "sudo apt update && sudo apt upgrade -y && sudo apt install python awscli -y"
-  # user_data = "${file("installations.sh")}"
+  user_data = "${file("installations.sh")}"
   security_groups = ["${aws_security_group.ingress-all-test.id}"]
   associate_public_ip_address = true
   tags = {

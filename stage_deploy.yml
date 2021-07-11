@@ -34,13 +34,13 @@
 
   - name: Ensure that aws cred is copied
     copy:
-      src: .aws/
+      src: ~/.aws/
       dest: .aws/
   
   - name: docker_repository - Log into ECR registry and force re-authorization
     shell: aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecs_ecr.repository.registryId }}.dkr.ecr.{{region}}.amazonaws.com
 
-  - name: Create a data container
+  - name: Create and run service
     docker_container:
       name: production
       image: "{{ ecs_ecr.repository.repositoryUri }}:{{version}}"
