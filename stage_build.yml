@@ -8,6 +8,9 @@
     version: v1.1.1
 
   tasks:
+  - name: Wait 600 seconds for target connection to become reachable/usable
+    wait_for_connection:
+
   - name: Esure git and maven package is present
     apt:
       update_cache: yes

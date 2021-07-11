@@ -5,7 +5,7 @@ resource "aws_key_pair" "my-key" {
 }
 
 resource "aws_instance" "ec2-instances" {
-  # iam_instance_profile = var.iam_profile_name
+  iam_instance_profile = var.iam_profile_name
   count = var.instances_num
   ami           = "${var.ami_id}"
   instance_type = "t2.micro"
