@@ -12,6 +12,7 @@ pipeline {
             steps {
                 sh 'ansible-playbook -i hosts.txt wait_ssh_connection.yml'
             }
+        }
         stage ('Build') {
             steps {
                 //  play playbook ansible for build
