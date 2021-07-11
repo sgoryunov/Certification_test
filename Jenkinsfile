@@ -1,13 +1,13 @@
 pipeline {
     agent any
     stages {
-        // stage ('Create infrastructure') {
-        //     steps {
-        //       sh 'terraform init -input=false'  
-        //       sh 'terraform plan -out=tfplan -input=false'
-        //       sh 'terraform apply -input=false tfplan'
-        //     }
-        //}
+        stage ('Create infrastructure') {
+            steps {
+              sh 'terraform init -input=false'  
+              sh 'terraform plan -out=tfplan -input=false'
+              sh 'terraform apply -input=false tfplan'
+            }
+        }
         stage ('Build') {
             steps {
                 //  play playbook ansible for build
