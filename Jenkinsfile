@@ -8,18 +8,20 @@ pipeline {
               sh 'terraform apply -input=false tfplan'
             }
         }
+        stage ('Waiting for ssh connection') {
+            steps {
+                sh 'ansible-playbook -i hosts.txt wait_ssh_connection.yml'
+            }
         stage ('Build') {
             steps {
                 //  play playbook ansible for build
-                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts.txt --extra-vars "version=$version"  stage_build.yml'
-                //  ansiblePlaybook extras: '--extra-vars version=$version', inventory: 'hosts.txt', playbook: 'stage_build.yml', sudoUser: 'ubuntu' 
+                sh 'ansible-playbook -i hosts.txt --extra-vars "version=$version"  stage_build.yml'
             }
         }
         stage ('Deploy') {
             steps {
                 //  copy compose-file and up it for start docker-image 
-                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts.txt --extra-vars "version=$version" stage_deploy.yml'
-                //  ansiblePlaybook extras: '--extra-vars version=$version', inventory: 'hosts.txt', playbook: 'stage_deploy.yml', sudoUser: 'ubuntu'
+                sh 'ansible-playbook -i hosts.txt --extra-vars "version=$version" stage_deploy.yml'
             }
         }
     }
