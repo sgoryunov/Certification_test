@@ -11,6 +11,7 @@ resource "aws_instance" "ec2-instances" {
   instance_type = "t2.micro"
   key_name      = aws_key_pair.my-key.key_name
   user_data = "${file("installations.sh")}"
+
   security_groups = ["${aws_security_group.ingress-all-test.id}"]
   associate_public_ip_address = true
   tags = {
