@@ -3,7 +3,7 @@
   hosts: ec2_prod
   remote_user: ubuntu
   become: yes
-  gather_facts: no
+  gather_facts: false
   vars:
     region: us-east-2
     version: v1.1.1
