@@ -7,7 +7,7 @@ pipeline {
         //       sh 'terraform plan -out=tfplan -input=false'
         //       sh 'terraform apply -input=false tfplan'
         //     }
-        }
+        //}
         stage ('Build') {
             steps {
                 //  play playbook ansible for build
