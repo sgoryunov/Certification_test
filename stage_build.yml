@@ -20,8 +20,8 @@
 
   - name: Installing boto3 and docker
     pip:
-      state: present
-      name:
+      state: latest
+      name: 
       - boto3
       - docker
       - awscli

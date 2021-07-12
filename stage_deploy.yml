@@ -19,7 +19,7 @@
 
   - name: Installing boto3 and docker
     pip:
-      state: present
+      state: latest
       name:
       - boto3
       - docker
