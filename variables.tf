@@ -11,7 +11,3 @@ variable "instances_num" {
   type = string
   default = "2"
 }
-variable "iam_profile_name" {
-  type = string
-  default = "ECR_user"
-}

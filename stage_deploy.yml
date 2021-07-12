@@ -26,16 +26,18 @@
       - awscli
       executable: /usr/bin/pip3
   
-  - name: Provisioning of repository
-    ecs_ecr:   
-      name: prod_image
-      region: "{{ region }}"
-    register: ecs_ecr
-
   - name: Ensure that aws cred is copied
     copy:
       src: ~/.aws/
-      dest: .aws/
+      dest: ~/.aws/
+
+  - name: Configure AWS
+    shell: yes '' | aws configure
+
+  - name: Provisioning of repository
+    ecs_ecr:   
+      name: prod_image
+    register: ecs_ecr
   
   - name: docker_repository - Log into ECR registry and force re-authorization
     shell: aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecs_ecr.repository.registryId }}.dkr.ecr.{{region}}.amazonaws.com
